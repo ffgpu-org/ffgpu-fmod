@@ -1,36 +1,25 @@
 # ffgpu-fmod
 
-#### Description
-The functional model (a.k.a C-model) of FFGPU. 
+## Description
+The functional model (a.k.a C-model) of FFGPU.
 
-#### Software Architecture
-Software architecture description
+ffgpu-fmod is a SystemC model. It can communicate to ffgpu-qemu through DBus IPC.
+The Operating Systerm(Linux) sees a pcie device in ffgpu-qemu and any operations on that device are pass to ffgpu-fmod through DBus.
 
-#### Installation
+ffgpu-fmod implements a full functional GPU.
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## The Purposes of ffgpu-fmod
+- As a golden model to RTL Hardware Model.
+- As a virtual device implementation for Software Development. (Linux kernel driver/Mesa3d Gallium driver)
+- Define a software to hardware protocol for OpenGL API.
 
-#### Instructions
+## Software Dependencies
+- SystemC (SystemC should be built with C++11)
+- gtk-3.0
+- glib
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+## Build
+	mkdir build && cd build
+	cmake .. && make
 
 
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)

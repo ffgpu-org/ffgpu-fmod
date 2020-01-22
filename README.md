@@ -15,11 +15,14 @@ ffgpu-fmod implements a full functional GPU.
 
 ## Software Dependencies
 - SystemC (SystemC should be built with C++11)
+>  We use systemc-2.3.3 and configure with:
+>
+>  CXXFLAGS=-stdc++-11 ./configure --prefix=/usr/local --with-unix-layout --enable-pthreads
 - gtk-3.0
 - glib
 
 ## Build
 	mkdir build && cd build
-	cmake .. && make
+	PKG_CONFIG_PATH=/usr/local/lib/pkgconfig cmake -DFFGPU_QEMU_DBUS_XML=[the path of org.ffgpu.qemu.xml] .. && make
 
-
+FFGPU_QEMU_DBUS_XML should be pointed to the qemu dbus interface xml file.

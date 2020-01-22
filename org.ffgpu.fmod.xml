@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    DBus interface of ffgpu-fmod to be called by ffgpu-qemu
+-->
+<node name="/org/ffgpu/fmod">
+  <interface name="org.ffgpu.fmod">
+
+    <!--
+	For Host to read device's memory
+    -->
+    <method name="read-device-memory">
+      <arg name="address" direction="in" type="t" />
+      <arg name="size" direction="in" type="t" />
+      <arg name="data" direction="out" type="ay" >
+	<annotation name="org.gtk.GDBus.C.ForceVariant" value="true" />
+      </arg>
+    </method>
+
+    <!--
+	For Host to write device's memory
+    -->
+    <method name="write-device-memory">
+      <arg name="address" direction="in" type="t" />
+      <arg name="size" direction="in" type="t" />
+      <arg name="data" direction="in" type="ay" >
+	<annotation name="org.gtk.GDBus.C.ForceVariant" value="true" />
+      </arg>
+    </method>
+
+    <!--
+	Get the POSIX share memory name
+	if NONE returned then device don't use POSIX share memory, 
+	HOST should use read/write to access device memory only.
+    -->
+    <method name="get-shm-name">
+      <arg name="name" directions="out" type="ay" />
+    </method>
+
+  </interface>
+</node>

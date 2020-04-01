@@ -39,8 +39,8 @@ pkg_check_modules (SYSTEMC systemc REQUIRED)
 pkg_check_modules (TLM tlm REQUIRED)
 
 set (SRCS
-  ${CMAKE_CURRENT_BINARY_DIR}/generated-dbus-fmod.c
-  ${CMAKE_CURRENT_BINARY_DIR}/generated-dbus-qemu.c
+  ${CMAKE_CURRENT_BINARY_DIR}/generated-fmod-intf.c
+  ${CMAKE_CURRENT_BINARY_DIR}/generated-qemu-intf.c
   src/main.cpp
   src/dc.cpp
   src/dram.cpp
@@ -56,12 +56,12 @@ target_include_directories (ffgpu-fmod BEFORE PUBLIC
 target_link_libraries (ffgpu-fmod  ${GTK_LIBRARIES} ${SYSTEMC_LIBRARIES} ${TLM_LIBRARIES} rt)
 
 
-add_custom_command(OUTPUT generated-dbus-fmod.c generated-dbus-fmod.h
-  COMMAND gdbus-codegen --generate-c-code generated-dbus-fmod --c-namespace FFgpu --interface-prefix org.ffgpu 
+add_custom_command(OUTPUT generated-fmod-intf.c generated-fmod-intf.h
+  COMMAND gdbus-codegen --generate-c-code generated-fmod-intf --c-namespace FFgpu --interface-prefix org.ffgpu 
   ${CMAKE_CURRENT_SOURCE_DIR}/org.ffgpu.fmod.xml )
-add_custom_command(OUTPUT generated-dbus-qemu.c generated-dbus-qemu.h
-  COMMAND gdbus-codegen --generate-c-code generated-dbus-qemu --c-namespace FFgpu --interface-prefix org.ffgpu 
+add_custom_command(OUTPUT generated-qemu-intf.c generated-qemu-intf.h
+  COMMAND gdbus-codegen --generate-c-code generated-qemu-intf --c-namespace FFgpu --interface-prefix org.ffgpu 
   ${FFGPU_QEMU_DBUS_XML} )
 
-add_custom_target(gen_dbus DEPENDS generated-dbus-fmod.c generated-dbus-fmod.h generated-dbus-qemu.c generated-dbus-qemu.h)
+add_custom_target(gen_dbus DEPENDS generated-fmod-intf.c generated-fmod-intf.h generated-qemu-intf.c generated-qemu-intf.h)
 add_dependencies(ffgpu-fmod gen_dbus)

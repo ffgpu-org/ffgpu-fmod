@@ -22,8 +22,8 @@
 #include <tlm_utils/simple_initiator_socket.h>
 
 #include "conf.h"
-#include "generated-dbus-fmod.h"
-#include "generated-dbus-qemu.h"
+#include "generated-fmod-intf.h"
+#include "generated-qemu-intf.h"
 
 class HOST : public sc_core::sc_module {
  public:

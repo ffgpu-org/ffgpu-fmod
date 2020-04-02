@@ -6,7 +6,7 @@
   <interface name="org.ffgpu.fmod">
 
     <!--
-	For Host to read device's memory
+	Host to read/write device's memory
     -->
     <method name="read-device-memory">
       <arg name="address" direction="in" type="t" />
@@ -15,10 +15,6 @@
 	<annotation name="org.gtk.GDBus.C.ForceVariant" value="true" />
       </arg>
     </method>
-
-    <!--
-	For Host to write device's memory
-    -->
     <method name="write-device-memory">
       <arg name="address" direction="in" type="t" />
       <arg name="size" direction="in" type="t" />
@@ -26,6 +22,11 @@
 	<annotation name="org.gtk.GDBus.C.ForceVariant" value="true" />
       </arg>
     </method>
+
+    <!--
+	Host to read/write device's register
+    -->
+    
 
     <!--
 	Get the POSIX share memory name

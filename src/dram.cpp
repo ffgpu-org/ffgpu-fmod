@@ -1,11 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////
-// ____________ _____ ______ _   _ 
+// ____________ _____ ______ _   _
 // |  ___|  ___|  __ \| ___ \ | | |
 // | |_  | |_  | |  \/| |_/ / | | |
 // |  _| |  _| | | __ |  __/| | | |
 // | |   | |   | |_\ \| |   | |_| |
-// \_|   \_|    \____/\_|    \___/ 
-//                                
+// \_|   \_|    \____/\_|    \___/
+//
 // Copyright (C) 2017-2020 ffgpu.org
 //
 // This program is free software; you can redistribute it and/or
@@ -26,66 +26,55 @@
 #include "conf.h"
 #include "dram.h"
 
-using namespace sc_core;
-using namespace tlm;
+DRAM::DRAM(sc_core::sc_module_name mod_name) {
+    pmem = ::malloc(DRAM_SIZE);
+    assert(pmem);
 
-void *DRAM::map_dram(void)
-{
-
-  fd_shm = shm_open(DRAM_SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP);
-  if (fd_shm < 0) {
-    fflog(SC_ERROR, "DRAM", "%s", strerror(errno));
-  }
-
-  ftruncate(fd_shm, DRAM_SIZE);
-  pmem = mmap(NULL, DRAM_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd_shm, 0);
-
-  return pmem;
+    pcie2dram_t_socket.register_b_transport(this, &DRAM::dram_b_transport);
+    dc2dram_t_socket.register_get_direct_mem_ptr(
+        this, &DRAM::dram_get_direct_mem_ptr);
 }
 
 DRAM::~DRAM() {
-  munmap(pmem, DRAM_SIZE);
-  close(fd_shm);
-  shm_unlink(DRAM_SHM_NAME);
+    free(pmem);
 }
 
-void DRAM::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay)
-{
-  tlm::tlm_command cmd  = trans.get_command();
-  uint64_t         addr = trans.get_address();
-  uint8_t*         ptr  = trans.get_data_ptr();
-  uint8_t*         byt  = trans.get_byte_enable_ptr();
-  uint32_t         len  = trans.get_data_length();
-  uint32_t         sw   = trans.get_streaming_width();
+void DRAM::dram_b_transport(tlm::tlm_generic_payload &trans,
+                            sc_core::sc_time &delay) {
+    tlm::tlm_command cmd = trans.get_command();
+    uint64_t addr = trans.get_address();
+    uint8_t *ptr = trans.get_data_ptr();
+    uint8_t *byt = trans.get_byte_enable_ptr();
+    uint32_t len = trans.get_data_length();
+    uint32_t sw = trans.get_streaming_width();
 
-  if (byt != NULL || sw != len) {
-    assert(false);
-  }
+    if (byt != NULL || sw != len) {
+        assert(false);
+    }
 
-  if (cmd == TLM_READ_COMMAND) {
+    if (cmd == tlm::TLM_READ_COMMAND) {
 
-    ::memcpy(ptr, (void *)((uintptr_t)pmem + addr), len);
+        ::memcpy(ptr, (void *)((uintptr_t)pmem + addr), len);
 
-  } else if (cmd == TLM_WRITE_COMMAND) {
+    } else if (cmd == tlm::TLM_WRITE_COMMAND) {
 
-    ::memcpy((void *)((uintptr_t)pmem + addr), ptr, len);
-    
-  } else if (cmd == TLM_IGNORE_COMMAND) {
-    // ignore it
-  } else {
-    assert(false);
-  }
+        ::memcpy((void *)((uintptr_t)pmem + addr), ptr, len);
 
-  trans.set_dmi_allowed(true);
-  trans.set_response_status(TLM_OK_RESPONSE);
+    } else if (cmd == tlm::TLM_IGNORE_COMMAND) {
+        // ignore it
+    } else {
+        assert(false);
+    }
+
+    trans.set_dmi_allowed(true);
+    trans.set_response_status(tlm::TLM_OK_RESPONSE);
 }
 
-bool DRAM::get_direct_mem_ptr(tlm_generic_payload& trans, tlm_dmi& dmi_data)
-{
-  dmi_data.allow_read_write();
-  dmi_data.set_dmi_ptr( reinterpret_cast<unsigned char*>(pmem));
+bool DRAM::dram_get_direct_mem_ptr(tlm::tlm_generic_payload &trans,
+                                   tlm::tlm_dmi &dmi_data) {
+    dmi_data.allow_read_write();
+    dmi_data.set_dmi_ptr((unsigned char *)pmem + dmi_data.get_start_address());
 
-  trans.set_response_status(TLM_OK_RESPONSE);
-  return true;
+    trans.set_response_status(tlm::TLM_OK_RESPONSE);
+    return true;
 }
-

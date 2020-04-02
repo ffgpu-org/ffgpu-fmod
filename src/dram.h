@@ -15,54 +15,28 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "conf.h"
 #include <systemc>
 #include <tlm_utils/simple_target_socket.h>
 
 SC_MODULE(DRAM) {
 
- public:
-    SC_CTOR(DRAM) {
-      pmem = map_dram();
-      assert(pmem);
-
-      dc_dram_t_socket.register_b_transport(this, &DRAM::b_transport);
-      dc_dram_t_socket.register_get_direct_mem_ptr(this, &DRAM::get_direct_mem_ptr);
-
-      host_dram_t_socket.register_b_transport(this, &DRAM::b_transport);
-      host_dram_t_socket.register_get_direct_mem_ptr(this, &DRAM::get_direct_mem_ptr);
-    };
+  public:
+    SC_HAS_PROCESS(DRAM);
+    DRAM(sc_core::sc_module_name mod_name);
     ~DRAM();
 
-    tlm_utils::simple_target_socket<DRAM> dc_dram_t_socket;
-    tlm_utils::simple_target_socket<DRAM> host_dram_t_socket;
-    
- private:
-    void *map_dram(void);
+    tlm_utils::simple_target_socket<DRAM> pcie2dram_t_socket;
+    tlm_utils::simple_target_socket<DRAM> dc2dram_t_socket;
+
+  private:
     void *pmem;
-    int fd_shm;
 
-    virtual void b_transport(tlm::tlm_generic_payload& trans, sc_core::sc_time& delay);
-    virtual bool get_direct_mem_ptr(tlm::tlm_generic_payload& trans, tlm::tlm_dmi& dmi_data);
+    void dram_b_transport(tlm::tlm_generic_payload & trans,
+                          sc_core::sc_time & delay);
+    bool dram_get_direct_mem_ptr(tlm::tlm_generic_payload & trans,
+                                 tlm::tlm_dmi & dmi_data);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Local Variables:
 // mode: c++

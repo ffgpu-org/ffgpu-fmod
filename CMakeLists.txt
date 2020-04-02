@@ -45,7 +45,8 @@ set (SRCS
   src/dc.cpp
   src/dram.cpp
   src/fflog.cpp
-  src/host.cpp
+  src/fep.cpp
+  src/pcie.cpp
   )
 
 link_directories(BEFORE ${SYSTEMC_LIBRARY_DIRS})
@@ -57,10 +58,10 @@ target_link_libraries (ffgpu-fmod  ${GTK_LIBRARIES} ${SYSTEMC_LIBRARIES} ${TLM_L
 
 
 add_custom_command(OUTPUT generated-fmod-intf.c generated-fmod-intf.h
-  COMMAND gdbus-codegen --generate-c-code generated-fmod-intf --c-namespace FFgpu --interface-prefix org.ffgpu 
+  COMMAND gdbus-codegen --generate-c-code generated-fmod-intf --c-namespace ffgpu --interface-prefix org.ffgpu 
   ${CMAKE_CURRENT_SOURCE_DIR}/org.ffgpu.fmod.xml )
 add_custom_command(OUTPUT generated-qemu-intf.c generated-qemu-intf.h
-  COMMAND gdbus-codegen --generate-c-code generated-qemu-intf --c-namespace FFgpu --interface-prefix org.ffgpu 
+  COMMAND gdbus-codegen --generate-c-code generated-qemu-intf --c-namespace ffgpu --interface-prefix org.ffgpu 
   ${FFGPU_QEMU_DBUS_XML} )
 
 add_custom_target(gen_dbus DEPENDS generated-fmod-intf.c generated-fmod-intf.h generated-qemu-intf.c generated-qemu-intf.h)

@@ -20,42 +20,36 @@
 #include <tlm_utils/simple_initiator_socket.h>
 #include <tlm_utils/simple_target_socket.h>
 
-
 class DC : public sc_core::sc_module {
 
-public:
-  SC_HAS_PROCESS(DC);
-  DC(sc_core::sc_module_name mod_name) :
-    win_width(1024),
-    win_height(768)
-  {
-    // g_timeout_add(1000/60, do_refresh, this);
-    host_dc_t_socket.register_b_transport(this, &DC::b_transport);
+  public:
+    SC_HAS_PROCESS(DC);
+    DC(sc_core::sc_module_name mod_name);
+    enum REG {
+        CRTC_ADDR = 1,
 
-    reg.FB_START_ADDR = 0;
-  };
+    };
 
-  bool init(void);
+    void init(void);
 
-  tlm_utils::simple_initiator_socket<DC> dc_dram_i_socket;
-  tlm_utils::simple_target_socket<DC> host_dc_t_socket;
+    tlm_utils::simple_initiator_socket<DC> dc2dram_i_socket;
+    tlm_utils::simple_target_socket<DC> pcie2dc_t_socket;
 
-  struct {
-    uint32_t FB_START_ADDR;    // start location of framebuffer
-  } reg;
+    struct {
+        uint32_t CRTC_ADDR; // start location of framebuffer
+    } reg;
 
-  GtkWidget *window;
-  gint win_width;
-  gint win_height;
+    GtkWidget *window;
+    gint win_width;
+    gint win_height;
 
-  static gboolean on_delete(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-  static gboolean on_draw(GtkWidget *wdg, cairo_t *cr, gpointer udata);
-  static gboolean do_refresh(gpointer udata);
-  virtual void b_transport(tlm::tlm_generic_payload& trans, sc_core::sc_time& delay);
+    static gboolean
+    on_delete(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+    static gboolean on_draw(GtkWidget *wdg, cairo_t *cr, gpointer udata);
+    static gboolean do_refresh(gpointer udata);
+    void pcie2dc_b_transport(tlm::tlm_generic_payload &trans,
+                             sc_core::sc_time &delay);
 };
-
-
-
 
 // Local Variables:
 // mode: c++
